@@ -1,0 +1,2 @@
+# ubuntu
+mining
