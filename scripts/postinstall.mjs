@@ -174,6 +174,15 @@ async function fixBetterSqliteBinary() {
 }
 
 async function ensureSwcHelpers() {
+  // Guard on "app" already existing: this fixup targets the standalone
+  // build output shipped in the published npm package. In a source
+  // checkout there is no root-level "app/" — creating one here would
+  // shadow src/app/ for Next.js's App Router and turn every route into
+  // a 404 (see #installation local-dev regression).
+  if (!existsSync(join(ROOT, "app"))) {
+    return;
+  }
+
   const swcHelpersApp = join(ROOT, "app", "node_modules", "@swc", "helpers");
   const swcHelpersRoot = join(ROOT, "node_modules", "@swc", "helpers");
 
