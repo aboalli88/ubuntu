@@ -1,0 +1,28 @@
+from math import exp, sqrt, pi
+def d(f,x,h=1e-6): return (f(x+h)-f(x-h))/(2*h)
+def eq(a,b,t=1e-3): return abs(a-b)<t*max(1,abs(b))
+ok=True
+def chk(n,c):
+    global ok; ok&=bool(c); print("OK  " if c else "FAIL",n)
+chk("1 18(3x+1)^5", all(eq(d(lambda x:(3*x+1)**6,x),18*(3*x+1)**5) for x in (0,1,-0.2)))
+f=lambda x:(x*x-4*x)**5; chk("2 f'(1)=-810; distr -405,810,-1620", eq(d(f,1),-810) and 5*81==405)
+chk("3 (f∘g)'(1)=160; distr 80,32,10", eq(d(lambda x:(x*x+1)**5,1),160) and 5*16==80 and 2**5==32 and 5*2==10)
+g=lambda x:sqrt(x*x+9); chk("4 x/sqrt(x^2+9)", all(eq(d(g,x),x/sqrt(x*x+9)) for x in (1,2,-3)))
+chk("5 dy/dx=1", all(eq(d(lambda x:sqrt(x)**2+1,x),1) for x in (1,4)))
+chk("6 a=±2", all(eq(d(lambda x,a=a:(x+a)**3,0),12) for a in (2,-2)) and not eq(d(lambda x:(x+3)**3,0),12))
+chk("7 4(x^3+2x)^3(3x^2+2)", all(eq(d(lambda x:(x**3+2*x)**4,x),4*(x**3+2*x)**3*(3*x*x+2)) for x in (0.5,1,2)))
+chk("8 -6/(2x-5)^4", all(eq(d(lambda x:(2*x-5)**-3,x),-6/(2*x-5)**4) for x in (0,1,4)))
+chk("9 12e^{3x}(e^{3x}-2)^3", all(eq(d(lambda x:(exp(3*x)-2)**4,x),12*exp(3*x)*(exp(3*x)-2)**3) for x in (0,0.5)))
+chk("10 2x e^{x^2}", all(eq(d(lambda x:exp(x*x),x),2*x*exp(x*x)) for x in (0,1,2)))
+chk("11 20", 5*4==20 and 3*5==15 and 3*4==12 and 4+5==9)
+f=lambda x:(x*x-2*x)**3; chk("12 zeros 0,1,2", all(abs(d(f,x))<1e-6 for x in (0,1,2)) and abs(d(f,3))>1)
+# solves
+f=lambda x:(x*x-4*x)**5; chk("S1A", all(eq(d(f,x),5*(x*x-4*x)**4*(2*x-4)) for x in (1,3,5)))
+f=lambda x:(1+6*x)**(-1/3); chk("S1B -2(1+6x)^(-4/3)", all(eq(d(f,x),-2*(1+6*x)**(-4/3)) for x in (0,1,2)))
+F=lambda x:(2*x*x+x)**3; chk("S1C 135", eq(d(F,1),135) and 27*5==135)
+f=lambda x:(3*x*x+1)**4*(x-2); chk("S2 y'=(3x^2+1)^3(27x^2-48x+1), y'(0)=1", all(eq(d(f,x),(3*x*x+1)**3*(27*x*x-48*x+1)) for x in (0,1,2)) and eq(d(f,0),1))
+f=lambda x:sqrt(2*x+7); chk("S3 f'=1/sqrt(2x+7), f(1)=3, f'(1)=1/3, y=x/3+8/3", all(eq(d(f,x),1/sqrt(2*x+7)) for x in (0,1,3)) and f(1)==3 and 3-1/3==8/3)
+V=lambda t:4/3*pi*(1+2*t)**3; chk("S4 dV/dt(1)=72pi", eq(d(V,1),72*pi))
+f=lambda x:(5*x-x**3)**-2; chk("S5A -2(5-3x^2)/(5x-x^3)^3", all(eq(d(f,x),-2*(5-3*x*x)/(5*x-x**3)**3) for x in (0.5,1,1.5)))
+f=lambda x:exp(x*x-3*x); chk("S5B (2x-3)e^{x^2-3x}; f'(0)=-3", all(eq(d(f,x),(2*x-3)*exp(x*x-3*x)) for x in (0,1,2)) and eq(d(f,0),-3))
+print("ALL OK" if ok else "FAILED")
